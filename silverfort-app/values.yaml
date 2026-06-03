@@ -1,0 +1,31 @@
+replicaCount: 1
+
+image:
+  repository: silverfort
+  tag: "v1"
+  pullPolicy: IfNotPresent
+
+# Inject the container name as an env variable requested by the prompt
+env:
+  CONTAINER_NAME: "silverfort-python-pod"
+
+service:
+  name: silverfort-release-silverfort-app
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations:
+    # Traefik specific annotation to allow self-signed TLS/generated certs
+    traefik.ingress.kubernetes.io/router.tls: "true"
+  hosts:
+    - host: silverfort.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+   - secretName: silverfort-tls-cert
+     hosts:
+       - silverfort.local
